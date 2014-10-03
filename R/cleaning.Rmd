@@ -1,0 +1,457 @@
+Exploratory Data Analysis
+========================================================
+
+## loading data, cleaning, etc.
+
+```{r}
+setwd("C:/Users/cgranell/Downloads/papers-redc/data")
+
+# carga los datos procesados de la encuesta
+url <- "https://github.com/cgranell/papers-redc-geolibrarian/raw/master/data/data-survey-raw.csv"
+data <- read.csv(url, colClasses="character")
+
+dim(data)
+
+names(data) <- tolower(names(data))
+names(data)
+
+data[, c("bib.tipo")] <- as.factor(data[, c("bib.tipo")] )
+data[, c("bib.ccaa")] <- as.factor(data[, c("bib.ccaa")] )
+
+# cleaning Variables for H1
+data[, c("p02.h1")] <- as.factor(data[, c("p02.h1")] )
+data[, c("p03.h1.a")] <- as.factor(data[, c("p03.h1.a")] )
+data[, c("p03.h1.b")] <- as.factor(data[, c("p03.h1.b")] )
+data[, c("p03.h1.c")] <- as.factor(data[, c("p03.h1.c")] )
+
+data$p06.h1.a <- sapply(data$p06.h1.a, function (x) {ifelse (x=="", NA, x)})
+data$p06.h1.b <- sapply(data$p06.h1.b, function (x) {ifelse (x=="", NA, x)})
+data$p06.h1.c <- sapply(data$p06.h1.c, function (x) {ifelse (x=="", NA, x)})
+data$p06.h1.d <- sapply(data$p06.h1.d, function (x) {ifelse (x=="", NA, x)})
+data$p06.h1.e <- sapply(data$p06.h1.e, function (x) {ifelse (x=="", NA, x)})
+data$p06.h1.f <- sapply(data$p06.h1.f, function (x) {ifelse (x=="", NA, x)})
+
+data$p06.h1.a <- as.factor(data$p06.h1.a)
+data$p06.h1.b <- as.factor(data$p06.h1.b)
+data$p06.h1.c <- as.factor(data$p06.h1.c)
+data$p06.h1.d <- as.factor(data$p06.h1.d)
+data$p06.h1.e <- as.factor(data$p06.h1.e)
+data$p06.h1.f <- as.factor(data$p06.h1.f)
+
+# cleaning Variables for H2
+data[, c("p07.h2")] <- as.factor(data[, c("p07.h2")] )
+data$p08.h2 <- sapply(data$p08.h2, function (x) {ifelse (x=="", NA, x)})
+data$p08.h2 <- as.factor(data$p08.h2)
+
+data$p09.h2.a <- sapply(data$p09.h2.a, function (x) {ifelse (x=="", NA, x)})
+data$p09.h2.b <- sapply(data$p09.h2.b, function (x) {ifelse (x=="", NA, x)})
+data$p09.h2.c <- sapply(data$p09.h2.c, function (x) {ifelse (x=="", NA, x)})
+data$p09.h2.d <- sapply(data$p09.h2.d, function (x) {ifelse (x=="", NA, x)})
+data$p09.h2.a <- as.factor(data$p09.h2.a)
+data$p09.h2.b <- as.factor(data$p09.h2.b)
+data$p09.h2.c <- as.factor(data$p09.h2.c)
+data$p09.h2.d <- as.factor(data$p09.h2.d)
+
+data$p10.h2.a <- sapply(data$p10.h2.a, function (x) {ifelse (x=="", NA, x)})
+data$p10.h2.b <- sapply(data$p10.h2.b, function (x) {ifelse (x=="", NA, x)})
+data$p10.h2.c <- sapply(data$p10.h2.c, function (x) {ifelse (x=="", NA, x)})
+data$p10.h2.a <- as.factor(data$p10.h2.a)
+data$p10.h2.b <- as.factor(data$p10.h2.b)
+data$p10.h2.c <- as.factor(data$p10.h2.c)
+
+# cleaning variables for H3
+data$p11.h3 <- as.factor(data$p11.h3)
+
+data$p12.h3 <- sapply(data$p12.h3, function (x) {ifelse (x=="", NA, x)})
+data$p13.h3 <- sapply(data$p13.h3, function (x) {ifelse (x=="", NA, x)})
+
+# cleaning varaibles for H4
+data$p15.h3.c01 <- as.numeric(data$p15.h3.c01)
+data$p15.h3.c02 <- as.numeric(data$p15.h3.c02)
+data$p15.h3.c03 <- as.numeric(data$p15.h3.c03)
+data$p15.h3.c04 <- as.numeric(data$p15.h3.c04)
+data$p15.h3.c05 <- as.numeric(data$p15.h3.c05)
+data$p15.h3.c06 <- as.numeric(data$p15.h3.c06)
+data$p15.h3.c07 <- as.numeric(data$p15.h3.c07)
+data$p15.h3.c08 <- as.numeric(data$p15.h3.c08)
+data$p15.h3.c09 <- as.numeric(data$p15.h3.c09)
+data$p15.h3.c10 <- as.numeric(data$p15.h3.c10)
+data$p15.h3.c11 <- as.numeric(data$p15.h3.c11)
+data$p15.h3.c12 <- as.numeric(data$p15.h3.c12)
+
+
+# Guarda los datos procesados en CSV
+write.csv(data, "./data-survey-clean.csv")
+
+
+```
+
+## do a bit of exploration of the total of observations 
+```{r}
+dim(data)
+
+counts <- table(data$bib.tipo, data$bib.ccaa)
+barplot(counts, main="Distribucion Universidades por CC.AA y tipo",
+  xlab="CC.AA", ylab="Número de Universidades", col=c("blue","red"),
+      legend = rownames(counts), cex=0.7, cex.names=0.4)
+
+
+#####################################################
+# http://www.statmethods.net/graphs/dot.html
+x <- data[, c("bib.siglas", "bib.tipo", "bib.ccaa")]
+x$color[x$bib.tipo=="Pública"] <- "blue"
+x$color[x$bib.tipo=="Privada"] <- "red"
+
+dotchart(table(x$bib.ccaa), labels=x$bib.ccaa,cex=.7, groups=x$bib.tipo, 
+       main="Universidades por CC.AA.", xlab="#", color=x$color)
+#####################################################
+```
+
+
+## do a bit of exploration for variables in H1 
+
+```{r}
+plot(data$p02.h1)
+table(data$p02.h1)
+
+# Universidades que contemplan un plan para gestión de datos geográficos
+plan.si <- data[data$p02.h1=="Sí", c("bib.siglas", "bib.tipo", "p03.h1.a", "p03.h1.b", "p03.h1.c", "p04.h1", "p05.h1")]
+nrow(plan.si)
+
+# Universidades que no contemplan un plan para gestión de datos geograficos
+plan.no <- data[data$p02.h1=="No", c("bib.siglas", "bib.tipo", "p06.h1.a", "p06.h1.b", "p06.h1.c", "p06.h1.d", "p06.h1.e", "p06.h1.f")]
+nrow(plan.no)
+
+# NOTA: Obs #11 (UPM) es un caso especial, ya que contempla un  plan (P02) pero no lo tiene aun definido (P04). Luego, no contesta P05 pero si a P06 (motivo de la falta de plan)
+plan.si[3, ]
+data[11, c("p02.h1", "p06.h1.a", "p06.h1.b", "p06.h1.c", "p06.h1.d", "p06.h1.e", "p06.h1.f")]
+
+```
+
+### Universidades que contempla un plan de gestión
+```{r}
+summary(plan.si)
+# Tablas para P03, P04, y P05
+plan.si[, c("bib.siglas", "bib.tipo", "p03.h1.a", "p03.h1.b", "p03.h1.c")]
+plan.si[, c("bib.siglas", "p04.h1")]
+plan.si[, c("bib.siglas", "p05.h1")]
+
+```
+
+### Universidades que no lo contemplan
+
+```{r}
+
+# copy default settings 
+opar <- par() 
+
+jpeg(filename = "fig1.jpeg", quality=100)
+
+p06 <- numeric(6)
+names(p06) <- letters[1:6]
+p06[1] <- nrow(subset(plan.no, p06.h1.a=="Sí"))     # 'subset' returns a data.frame
+p06[2] <- nrow(subset(plan.no, p06.h1.b=="Sí"))     # 'subset' returns a data.frame
+p06[3] <- nrow(subset(plan.no, p06.h1.c=="Sí"))     # 'subset' returns a data.frame
+p06[4] <- nrow(subset(plan.no, p06.h1.d=="Sí"))     # 'subset' returns a data.frame
+p06[5] <- nrow(subset(plan.no, p06.h1.e=="Sí"))     # 'subset' returns a data.frame
+p06[6] <- nrow(subset(plan.no, p06.h1.f=="Sí"))     # 'subset' returns a data.frame
+
+par(mfrow=c(1, 1), mar=c(5, 5, 4, 2) + 0.1)
+
+x <- barplot(p06, main="Motivos de la falta de plan de gestión de datos geográficos", xlab="Motivos principales", ylab="Frecuencia", col=gray(0:6 / 6), legend = c("(a) Económicos", "(b) Humanos", "(c) Interes", "(d) No necesidad", "(e) Otros ya lo hacen", "(f) No hay prioridad"), border=NA, beside=TRUE, xlim=c(0,8), args.legend = list(x = "topleft", bty = "n"))
+text(x, p06+0.1, labels=as.character(p06), pos=3, xpd=TRUE, col="black", cex=.7)
+
+# close jpeg
+dev.off()
+# restore original settings
+par(opar)   
+
+
+############################
+# Other way. Not used in final analisys 
+############################
+opar <- par() 
+
+# PDF open:
+pdf(file="plan.no.pdf", height=11, width=8.5)
+par(mfrow=c(3,2))
+
+counts <- table(plan.no$bib.tipo, plan.no$p06.h1.a)
+x <- barplot(counts, main="Falta recursos económicos",
+  xlab="Tipo universidad", ylab="Número de Universidades", col=c("blue","red"),
+      legend = rownames(counts), border=NA, beside=TRUE, xlim=c(0,8))
+text(x, counts+0.1, labels=as.character(counts), pos=3, xpd=TRUE, col="black", cex=.7)
+
+
+counts <- table(plan.no$bib.tipo, plan.no$p06.h1.b)
+barplot(counts, main="Falta recursos humanos",
+  xlab="Tipo universidad", ylab="Número de Universidades", col=c("blue","red"),
+      legend = rownames(counts), border=NA, beside=TRUE, xlim=c(0,8))
+text(x, counts+0.1, labels=as.character(counts), pos=3, xpd=TRUE, col="black", cex=.7)
+
+counts <- table(plan.no$bib.tipo, plan.no$p06.h1.c)
+barplot(counts, main="Falta de interés interés institucional",
+  xlab="Tipo universidad", ylab="Número de Universidades", col=c("blue","red"),
+      legend = rownames(counts), border=NA, beside=TRUE, xlim=c(0,8))
+text(x, counts+0.1, labels=as.character(counts), pos=3, xpd=TRUE, col="black", cex=.7)
+
+counts <- table(plan.no$bib.tipo, plan.no$p06.h1.d)
+barplot(counts, main="No se detecta la necesidad",
+  xlab="Tipo universidad", ylab="Número de Universidades", col=c("blue","red"),
+      legend = rownames(counts), border=NA, beside=TRUE, xlim=c(0,8))
+text(x, counts+0.1, labels=as.character(counts), pos=3, xpd=TRUE, col="black", cex=.7)
+
+counts <- table(plan.no$bib.tipo, plan.no$p06.h1.e)
+barplot(counts, main="Otros están trabajando en ello",
+  xlab="Tipo universidad", ylab="Número de Universidades", col=c("blue","red"),
+      legend = rownames(counts), border=NA, beside=TRUE, xlim=c(0,8))
+text(x, counts+0.1, labels=as.character(counts), pos=3, xpd=TRUE, col="black", cex=.7)
+
+counts <- table(plan.no$bib.tipo, plan.no$p06.h1.f)
+barplot(counts, main="No es prioritario",
+  xlab="Tipo universidad", ylab="Número de Universidades", col=c("blue","red"),
+      legend = rownames(counts), border=NA, beside=TRUE, xlim=c(0,8))
+text(x, counts+0.1, labels=as.character(counts), pos=3, xpd=TRUE, col="black", cex=.7)
+
+# close PDF
+dev.off()
+# restore original settings
+par(opar)          
+
+```
+
+
+## do a bit of exploration for variables in H2   
+
+```{r}
+# Universidades que saben que otros departamentos usan GI pero no colabora con ellos
+colabora.no <- data[data$p07.h2=="Sí", c("bib.siglas", "bib.tipo", "p10.h2.a", "p10.h2.b", "p10.h2.c")]
+nrow(colabora.no)
+
+# copy default settings
+opar <- par() 
+
+jpeg(filename = "barplot-p10.jpeg", quality=100)
+
+p10 <- numeric(3)
+names(p10) <- letters[1:3]
+p10[1] <- nrow(subset(colabora.no, p10.h2.a=="Sí"))     # 'subset' returns a data.frame
+p10[2] <- nrow(subset(colabora.no, p10.h2.b=="Sí"))     # 'subset' returns a data.frame
+p10[3] <- nrow(subset(colabora.no, p10.h2.c=="Sí"))     # 'subset' returns a data.frame
+
+par(mfrow=c(1, 1), mar=c(5, 5, 4, 2) + 0.1)
+
+x <- barplot(p10, main="Colaboración deseable en cuanto a datos geográficos", xlab="Tipo de colaboración", ylab="Frecuencia", col=gray(0:3 / 3), legend = c("(a) Receptor de datos", "(b) Desarrollo repositorios", "(c) Iniciativas conjuntas"), border=NA, beside=TRUE, xlim=c(0,8), args.legend = list(x = "topright", bty = "n"))
+text(x, p10+0.1, labels=as.character(p10), pos=3, xpd=TRUE, col="black", cex=.7)
+
+dev.off()
+# restore original settings
+par(opar)   
+```
+
+
+
+## do a bit of exploration for variables in H3  
+
+```{r}
+
+# Perfil deseable
+perfil <- sapply(table(data[, c("p14.h3")]), function (x) {ifelse (x[1]>1, x, NA)})
+otros <- sum(is.na(perfil))
+
+# copy default settings 
+opar <- par() 
+
+jpeg(filename = "barplot-p14.jpeg", quality=100)
+
+p14 <- as.numeric(perfil)
+p14[7] <- otros
+names(p14) <- letters[1:7]
+
+par(mfrow=c(1, 1), mar=c(5, 5, 4, 2))
+
+x <- barplot(p14[1:7], main="Perfil idóneo para la gestión de datos geográficos", xlab="Perfiles", ylab="Frecuencia", col=gray(0:7 / 7), legend = c("(a) Bibliotecario + datos inv.", "(b) Bibliotecario + datos geo", "(c) Bibliotecario + mapas", "(d) Bibliotecario", "(e) Esp. datos geo", "(f) Esp. datos geo + biblio", "(g) NS/NC"), border=NA, beside=TRUE, xlim=c(0,8), args.legend = list(x = "topright", bty = "n"))
+text(x, p14[1:7]+0.1, labels=as.character(p14[1:7]), pos=3, xpd=TRUE, col="black", cex=.7)
+
+dev.off()
+# restore original settings
+par(opar)   
+```
+
+
+## do a bit of exploration for variables in H4  
+```{r}
+
+###########################################
+# Esta es la opcion buena!!!!
+
+    # boxplot for competences
+install.packages("lattice")
+library(lattice)
+
+competences <- read.csv("comp.csv", colClasses="character")
+list.comp = c("C1", "C2", "C3", "C4", "C5", "C6", "C7","C8","C9","C10","C11","C12")
+
+competences$X.id <- as.integer(competences$X.id)
+competences$count <- as.integer(competences$count)
+competences$scale.num <- as.integer(competences$scale.num)
+competences$count.weigthed <- competences$count * competences$scale.num
+competences$type <- factor(competences$type, 
+            list.comp, 
+            ordered=TRUE)
+competences$scale <- factor(competences$scale, 
+            c("No Importante", "Poco Importante", "Neutro", "Importante", "Muy Importante"), 
+            ordered=TRUE)
+
+y <- numeric()
+for (x in list.comp) {
+    newItems = prop.table(competences[competences$type==x, c("count")])
+    y <- c(y,newItems)
+    }
+competences$percent <- round(y*100,2)
+
+opar <- par() 
+
+jpeg(filename = "barchart-p15.jpeg", quality=100)
+
+par(mfrow=c(1, 1), mar=c(5, 5, 4, 2) + 0.1)
+
+barchart(scale~percent|type, data=competences, as.table = TRUE,
+         xlab="Porcentaje de valoración",
+         #auto.key = list(columns = 1))
+         layout = c(3, 4),
+         #col=sort(brewer.pal(7,"Purples")), 
+         col=gray(5:0 / 5),
+         box.width=.7, 
+         stack = TRUE,
+         auto.key = list(space = "right"))
+
+dev.off()
+# restore original settings
+par(opar)   
+ 
+            
+      
+
+################ Para preguntar...
+bwplot(scale ~ count| factor(type), competences, layout = c(3, 4))
+
+barchart(type ~ count | factor(scale), competences, layout = c(1, 5))
+
+# Same info through two visualizations
+barchart(scale ~ count | factor(type), competences, layout = c(3, 4))
+dotplot(scale ~ count | type, competences, layout = c(3, 4))
+
+dotplot(scale ~ count.weigthed, data = competences, groups = type, type = "o", auto.key = list(space = "right", points = TRUE, lines = TRUE))
+
+
+
+# Tree maps for competences
+install.packages("treemap")
+library(treemap)
+install.packages("RColorBrewer")
+library(RColorBrewer)
+
+# copy default settings 
+
+opar <- par() 
+
+jpeg(filename = "treemap-p15.jpeg", quality=100)
+
+par(mfrow=c(1, 1), mar=c(5, 5, 4, 2) + 0.1)
+
+
+
+treemap(competences, 
+        index = c("type", "scale") , 
+        vSize = "count.weigthed" , 
+        vColor = "scale.num", 
+        type = "value", 
+        title="Treemap de competencias",  
+        fontsize.labels=c(10, 8), 
+        align.labels=list(c("left", "center"), c("left", "top")),
+        lowerbound.cex.labels=1, 
+        palette="PiYG",
+        range=c(1,5), 
+        bg.labels="#DCDCDC00", # color is "#RRGGBBAA" and the AA portion is the trasparency
+        border.col = c("black","white"), # defines line colour 
+        border.lwds = c(1,1), # defines line width
+        position.legend = "none") # remove legend)
+
+dev.off()
+# restore original settings
+par(opar)   
+
+```
+## Other stuff
+
+```{r}
+################################################################
+# Not used in final analysis
+################################################################
+
+# Example of parallel coordinates
+install.packages("MASS")
+library("MASS")
+cardeaths <- data.frame(Seatbelts[,1], Seatbelts[,5], Seatbelts[,6], Seatbelts[,8])
+colnames(cardeaths) <- c("DriversKilled", "DistanceDriven", "PriceofGas", "SeatbeltLaw")
+parcoord(cardeaths, col=rainbow(length(cardeaths[,1])), var.label=TRUE)
+
+competences <- data.frame(data$p15.h3.c01, data$p15.h3.c02, data$p15.h3.c03, data$p15.h3.c04, data$p15.h3.c05)
+colnames(competences) <- c("c01", "c02", "c03", "c04", "c05")
+parcoord(competences), col=rainbow(length(competences[,1])), var.label=TRUE)
+
+install.packages("portfolio")
+install.packages("RColorBrewer")
+install.packages("treemap")
+library(treemap)
+library(RColorBrewer)
+library(portfolio)
+
+# Example of treemap
+competences <- read.csv("comp.csv", colClasses="character")
+competences$X.id <- as.numeric(competences$X.id)
+competences$count <- as.numeric(competences$count)
+competences$scale.num <- as.numeric(competences$scale.num)
+competences$count <- competences$count * competences$scale.num
+map.market(id=competences$X.id, area=competences$count, group=competences$type, color=competences$scale_num, lab = c(TRUE, TRUE), main="Mapa de Competencias")
+
+competences <- read.csv("comp.csv", colClasses="character")
+competences$X.id <- as.numeric(competences$X.id)
+competences$count <- as.numeric(competences$count)
+competences$scale.num <- as.numeric(competences$scale.num)
+competences$count <- competences$count * competences$scale.num
+
+
+treemap(competences, 
+        index = c("type", "scale"), 
+        vSize = "count", 
+        vColor = "count", 
+        type = "index", 
+        title="Mapas de Compentencias",
+        palette="Blues", 
+        fontsize.labels=c(12, 8), 
+        align.labels=list(c("center", "center"), c("left", "top")),
+        lowerbound.cex.labels=1)
+
+treemap(competences, 
+        index = c("type", "scale") , 
+        vSize = "count" , 
+        vColor = "scale.num", 
+        type = "value", 
+        title="Mapas de Competencias",  
+        fontsize.labels=c(10, 8), 
+        align.labels=list(c("left", "center"), c("left", "top")),
+        lowerbound.cex.labels=1, 
+        palette="PiYG",
+        range=c(1,5), 
+        bg.labels="#DCDCDC00", # color is "#RRGGBBAA" and the AA portion is the trasparency
+        border.col = c("black","white"), # defines line colour 
+        border.lwds = c(1,1), # defines line width
+        position.legend = "none") # remove legend)
+
+###################################################################################
+
+```
+
+

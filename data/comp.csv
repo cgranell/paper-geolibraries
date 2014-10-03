@@ -1,0 +1,61 @@
+#id, count, type, scale, scale.num
+0,0,C1,No Importante,1
+1,1,C1,Poco Importante,2
+2,6,C1,Neutro,3
+3,11,C1,Importante,4
+4,10,C1,Muy Importante,5
+5,0,C2,No Importante,1
+6,3,C2,Poco Importante,2
+7,9,C2,Neutro,3
+8,7,C2,Importante,4
+9,9,C2,Muy Importante,5
+10,2,C3,No Importante,1
+11,4,C3,Poco Importante,2
+12,9,C3,Neutro,3
+13,7,C3,Importante,4
+14,6,C3,Muy Importante,5
+15,1,C4,No Importante,1
+16,4,C4,Poco Importante,2
+17,12,C4,Neutro,3
+18,5,C4,Importante,4
+19,6,C4,Muy Importante,5
+20,0,C5,No Importante,1
+21,1,C5,Poco Importante,2
+22,10,C5,Neutro,3
+23,10,C5,Importante,4
+24,7,C5,Muy Importante,5
+25,0,C6,No Importante,1
+26,0,C6,Poco Importante,2
+27,7,C6,Neutro,3
+28,10,C6,Importante,4
+29,11,C6,Muy Importante,5
+30,0,C7,No Importante,1
+31,1,C7,Poco Importante,2
+32,5,C7,Neutro,3
+33,13,C7,Importante,4
+34,9,C7,Muy Importante,5
+35,0,C8,No Importante,1
+36,0,C8,Poco Importante,2
+37,12,C8,Neutro,3
+38,7,C8,Importante,4
+39,9,C8,Muy Importante,5
+40,0,C9,No Importante,1
+41,2,C9,Poco Importante,2
+42,7,C9,Neutro,3
+43,6,C9,Importante,4
+44,13,C9,Muy Importante,5
+45,0,C10,No Importante,1
+46,3,C10,Poco Importante,2
+47,13,C10,Neutro,3
+48,8,C10,Importante,4
+49,4,C10,Muy Importante,5
+50,0,C11,No Importante,1
+51,1,C11,Poco Importante,2
+52,7,C11,Neutro,3
+53,9,C11,Importante,4
+54,11,C11,Muy Importante,5
+55,1,C12,No Importante,1
+56,7,C12,Poco Importante,2
+57,8,C12,Neutro,3
+58,8,C12,Importante,4
+59,4,C12,Muy Importante,5
