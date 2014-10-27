@@ -56,7 +56,9 @@ data$p15.h3.c12 <- as.numeric(data$p15.h3.c12)
 ### datos geográficos no se considera dentro de los planes de las bibliotecas encuestas (N=22)
 
 # Universidades que no contemplan un plan para gestión de datos geograficos
-plan.no <- data[data$p02.h1=="No", c("bib.siglas", "bib.tipo", "p06.h1.a", "p06.h1.b", "p06.h1.c", "p06.h1.d", "p06.h1.e", "p06.h1.f")]
+plan.no <- data[data$p02.h1=="No", c("bib.siglas", "bib.tipo", 
+                                     "p06.h1.a", "p06.h1.b", "p06.h1.c", 
+                                     "p06.h1.d", "p06.h1.e", "p06.h1.f")]
 nrow(plan.no) # N=22
 
 p06 <- numeric(6)
@@ -81,14 +83,16 @@ ppi=300
 jpeg(filename = "../figuras/fig1.jpg",width=5*ppi, height=4*ppi, res=ppi, quality=100)
 
 ggplot(p06.df, aes(x=reason, y=count)) + 
-    geom_bar(stat="identity", width=0.7, colour="white", fill="grey80") +
+    geom_bar(stat="identity", width=0.7, colour="black", fill="lightblue") +
     theme_bw(base_family = "Times", base_size=11) + 
     labs(x = "") + 
     #labs(x = "Motivos de la falta de planes de gestión de datos geográficos") + 
     labs(y = "Número de respuestas") + 
     scale_y_continuous(breaks=c(seq(0,12,2))) +
-    geom_text(aes(label=count), vjust=1.5, colour="black", size=2) + # Added labels    
-    theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1)) # Rotating the text 30 degrees
+    geom_text(aes(label=count), vjust=1.5, colour="black", size=2.5) + # Added labels    
+    theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1)) + # Rotating the text 30 degrees
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank()) # Hide the vertical grid lines (which intersect with the x-axis)
 
 # cierra jpeg
 dev.off()
@@ -123,15 +127,16 @@ ppi=300
 jpeg(filename = "../figuras/fig2.jpg",width=5*ppi, height=4*ppi, res=ppi, quality=100)
 
 ggplot(p10.df, aes(x=reason, y=count)) + 
-    geom_bar(stat="identity", width=0.7, colour="white", fill="grey80") +
-    #coord_flip() + 
+    geom_bar(stat="identity", width=0.5, colour="black", fill="lightblue") +
+    coord_flip() + 
     theme_bw(base_family = "Times", base_size=11) + 
     labs(x = "") + 
     #labs(x = "Colaboración deseable en cuanto a datos geográficos") + 
     labs(y = "Número de respuestas") + 
     scale_y_continuous(breaks=c(seq(0,10,2))) +
-    geom_text(aes(label=count), vjust=1.5, colour="black", size=2) + # Added labels    
-    theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1)) # Rotating the text 30 degrees
+    geom_text(aes(label=count), hjust=1.5, colour="black", size=2.5) + # Added labels    
+    theme(panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank()) # Hide the horizontal grid lines (which intersect with the x-axis)
 
 
 dev.off()
@@ -160,8 +165,8 @@ names(p14) <- c("Bibliotecario con formación \nen gestión de datos de investigac
 
 p14.df <- data.frame(
     reason = names(p14),
-    count = p14)
-
+    count = p14, 
+    profile = c("DOCU", "DOCU", "DOCU", "DOCU", "SIG", "SIG", NA))
 
 # copia parametros por defecto 
 opar <- par() 
@@ -171,16 +176,20 @@ par(mfrow=c(1, 1), mar=c(5, 5, 4, 2))
 ppi=300
 jpeg(filename = "../figuras/fig3.jpg",width=6*ppi, height=5*ppi, res=ppi, quality=100)
 
-ggplot(p14.df, aes(x=reason, y=count)) + 
-    geom_bar(stat="identity", width=0.7, colour="white", fill="grey80") +
+ggplot(p14.df, aes(x=reason, y=count, fill=profile)) + 
+    geom_bar(stat="identity", width=0.7, colour="black") +
     coord_flip() + 
     theme_bw(base_family = "Times", base_size=11) + 
     labs(x = "") + 
     #labs(x = "Perfil idóneo para la gestión de datos geográficos") + 
     labs(y = "Número de respuestas") + 
     scale_y_continuous(breaks=c(seq(0,12,2))) +
-    geom_text(aes(label=count), hjust=2, colour="black", size=2) + # Added labels    
-    theme(axis.text.x = element_text(angle=0, hjust=1, vjust=1)) # Rotating the text 30 degrees
+    scale_fill_brewer("clarity", na.value="grey80") +
+    geom_text(aes(label=count), hjust=2, colour="black", size=2.5) + # Added labels    
+    #theme(axis.text.x = element_text(angle=0, hjust=1, vjust=1)) # Rotating the text 30 degrees
+    theme(panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank()) + # Hide the horizontal grid lines
+    theme(legend.position="none") # remove legend
 
 dev.off()
 # restaura params defecto
@@ -191,8 +200,6 @@ par(opar)
 ### Conjunto de competencias desglosadas en función de la valoración recibida.  
 ### Cada una de las gráficas muestra el porcentaje de valoración de una competencias 
 ### sobre el total de respuestas por competencia (N=28) 
-
-library(lattice)
 
 url <- "https://raw.githubusercontent.com/cgranell/paper-geolibraries/master/data/comp.csv"
 competences <- read.csv(url, colClasses="character")
@@ -206,7 +213,11 @@ competences$type <- factor(competences$type,
                            list.comp, 
                            ordered=TRUE)
 competences$scale <- factor(competences$scale, 
-                            c("No Importante", "Poco Importante", "Neutro", "Importante", "Muy Importante"), 
+                            c("No Importante", 
+                              "Poco Importante", 
+                              "Neutro", 
+                              "Importante", 
+                              "Muy Importante"), 
                             ordered=TRUE)
 
 y <- numeric()
@@ -225,20 +236,22 @@ par(mfrow=c(1, 1), mar=c(5, 5, 4, 2))
 ppi=300
 jpeg(filename = "../figuras/fig4.jpg",width=6*ppi, height=5*ppi, res=ppi, quality=100)
 
-
 ggplot(competences, aes(x=scale, y=percent, fill=scale)) + 
-    geom_bar(stat="identity", width=0.7, colour="white") +
+    geom_bar(stat="identity", width=0.7, colour="black") +
     facet_wrap( ~ type) +
     facet_wrap( ~ type, nrow=3) +
     facet_wrap( ~ type, ncol=4) +
     coord_flip() + 
-    scale_fill_grey(start=0.6, end=0.2) +
-    #scale_fill_brewer(palette="Oranges") +
+    #scale_fill_grey(start=0.6, end=0.2) +
+    scale_fill_brewer("clarity") +
     theme_bw(base_family = "Times", base_size=11) + 
     labs(x = "Escala de valoración") + 
     labs(y = "Porcentaje de valoración") +
+    theme(panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank()) + # Hide the horizontal grid lines
     theme(legend.position="none") # remove legend
-    
+
+
 # cerrar jpeg
 dev.off()
 # restaura params defecto
